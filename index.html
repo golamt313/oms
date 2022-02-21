@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>OMS</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <style>
+      body {
+        background: rgb(255, 255, 255);
+      }
+
+      .modal-dialog {
+        max-width: 60%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="card mt-3">
+        <div class="card-header">
+          <h3 class="text-center">Order Management System</h3>
+        </div>
+        <a
+          class="btn btn-primary"
+          data-toggle="collapse"
+          href="#collapseDiv"
+          role="button"
+          aria-expanded="false"
+          aria-controls="collapseDiv"
+        >
+          Add New Order
+        </a>
+        <div class="card-body collapse" id="collapseDiv">
+          <form action="#" id="orderForm">
+            <div class="form-group">
+              <label for="date">Date</label>
+              <input type="text" id="date" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label for="orderNumber">Order #</label>
+              <input type="text" id="orderNumber" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label for="customerName">Customer</label>
+              <input type="text" id="customerName" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label for="orderTotal">Total</label>
+              <input type="text" id="orderTotal" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label for="orderStatus">Status</label>
+              <select id="orderStatus" class="form-control">
+                <option value="Completed">Completed</option>
+                <option value="Pending Payment">Pending Payment</option>
+                <option value="In-Progress">In-Progress</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div class="form-group text-right">
+              <input type="submit" value="save" class="btn btn-success" />
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div
+        class="modal fade"
+        id="orderModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="orderModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalLabel"></h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body w-100">
+                <a
+                class="btn btn-primary w-100"
+                data-toggle="collapse"
+                href="#collapseItems"
+                role="button"
+                aria-expanded="false"
+                aria-controls="collapseItems"
+
+                >
+                Add Item
+                </a>
+
+                <div class="card-body collapse" id="collapseItems">
+                    <form action="#" id="itemForm">
+                      <div class="form-group">
+                        <label for="item">Item</label>
+                        <input type="text" id="item" class="form-control" />
+                      </div>
+          
+                      <div class="form-group">
+                        <label for="itemQuantity">Quantity</label>
+                        <input type="text" id="itemQuantity" class="form-control" />
+                      </div>
+          
+                      <div class="form-group">
+                        <label for="itemDesc">Description</label>
+                        <input type="text" id="itemDesc" class="form-control" />
+                      </div>
+          
+                      <div class="form-group">
+                        <label for="itemPrice">Price</label>
+                        <input type="text" id="itemPrice" class="form-control" />
+                      </div>
+          
+                      <div class="form-group">
+                        <label for="itemStatus">Status</label>
+                        <select id="itemStatus" class="form-control">
+                          <option value="Delivered">Delivered</option>
+                          <option value="Pending">Pending</option>
+                          <option value="In-Progress">In-Progress</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </div>
+          
+                      <div class="form-group text-right">
+                        <input type="submit" value="save" class="btn btn-success" />
+                      </div>
+                    </form>
+                  </div>
+
+              <table class="table">
+                <tr>
+                  <th>Item</th>
+                  <th>Quantity</th>
+                  <th>Description</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+                <tbody id="dynamicItemsHere"></tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <!--<button type="button" class="btn btn-primary">
+                Save changes
+              </button>-->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="modal fade"
+        id="orderEditModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="orderEditModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalLabel"></h5>
+            </div>
+            <div class="modal-body w-100">
+              <table class="table">
+                <tr>
+                  <th>Date</th>
+                  <th>Order #</th>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+                <tbody id="orderInfo"></tbody>
+                <form action="#" id="orderEditForm">
+                  <div class="form-group">
+                      <td><input type="text" id="updateDate" class="form-control"/></td>
+                      <td><input type="text" id="updateOrderNumber" class="form-control"/></td>
+                      <td><input type="text" id="updateCustomerName" class="form-control"/></td>
+                      <td><input type="text" id="updateOrderTotal" class="form-control"/></td>
+                      <td><select id="updateOrderStatus" class="form-control">
+                      <option value="Completed">Completed</option>
+                      <option value="Pending Payment">Pending Payment</option>
+                      <option value="In-Progress">In-Progress</option>
+                      <option value="Cancelled">Cancelled</option>
+                      </select></td>
+                      <td><button type="submit" class='btn btn-primary saveOrder'>Update</button></td>
+  
+                  </div>
+              </form>
+                
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-5">
+        <table class="table">
+          <tr>
+            <th>Date</th>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+          <tbody id="dynamicHere"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      // Initialize Firebase
+      const config = {
+        apiKey: "AIzaSyAzHz5S7TzwVdmRJ0uIvbkYa9Z83XD0R7A",
+        authDomain: "order-management-system-e979d.firebaseapp.com",
+        projectId: "order-management-system-e979d",
+        storageBucket: "order-management-system-e979d.appspot.com",
+        messagingSenderId: "227897856466",
+        appId: "1:227897856466:web:4a3aa4c08d909a64caf80b",
+      };
+      firebase.initializeApp(config);
+      const db = firebase.firestore();
+      db.settings({ timestampsInSnapshots: true });
+    </script>
+    <script src="app.js"></script>
+  </body>
+</html>
