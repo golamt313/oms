@@ -286,6 +286,11 @@ window.onload = function () {
           }
 
       }else if(el.classList.contains("editOrder")) {
+       document.getElementById("updateDate").value = date
+       document.getElementById("updateOrderNumber").value = orderNumber
+       document.getElementById("updateCustomerName").value = customerName
+       document.getElementById("updateOrderTotal").value = price
+       document.getElementById("updateOrderStatus").value = status
        dynamicOrderInfo.innerHTML =
         `
             <tr>
